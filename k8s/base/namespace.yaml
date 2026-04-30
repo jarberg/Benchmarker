@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: benchmarker
+  labels:
+    name: benchmarker
+    app.kubernetes.io/part-of: benchmarker

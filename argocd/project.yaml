@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: benchmarker
+  namespace: argocd
+spec:
+  description: "Benchmarker apps and infrastructure"
+  sourceRepos:
+    - https://github.com/example/benchmarker.git
+  destinations:
+    - namespace: benchmarker
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

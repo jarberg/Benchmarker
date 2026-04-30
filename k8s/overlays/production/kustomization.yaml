@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: benchmarker
+
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/example/benchmarker-server
+    newTag: v0.1.0
+
+patches:
+  - target: { kind: Deployment, name: benchmarker-server }
+    patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 4

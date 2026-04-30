@@ -1,0 +1,6 @@
+region              = "us-east-1"
+environment         = "production"
+project_name        = "benchmarker"
+kubernetes_version  = "1.30"
+node_instance_types = ["t3.large"]
+db_instance_class   = "db.t3.medium"

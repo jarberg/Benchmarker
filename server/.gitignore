@@ -1,0 +1,19 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+benchmarker-*.tar
+/tmp/
+
+# Compiled web assets
+/priv/static/assets/
+
+# Node
+/assets/node_modules/
+
+# Local env / state
+.env
+*.beam

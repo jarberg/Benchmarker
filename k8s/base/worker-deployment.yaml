@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: benchmarker-worker
+  namespace: benchmarker
+  labels:
+    app.kubernetes.io/name: benchmarker-worker
+    app.kubernetes.io/part-of: benchmarker
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate          # benchmarks are long-running — don't roll mid-run
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: benchmarker-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: benchmarker-worker
+    spec:
+      serviceAccountName: benchmarker
+      # Uncomment when you have GPU-tagged nodes for real game runs.
+      # nodeSelector:
+      #   workload: benchmark
+      # tolerations:
+      #   - key: nvidia.com/gpu
+      #     operator: Exists
+      containers:
+        - name: worker
+          image: ghcr.io/example/benchmarker-server:latest   # same image, different role
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BENCHMARKER_ROLE
+              value: worker
+            - name: PHX_SERVER
+              value: "false"
+            - name: WORKER_ID
+              valueFrom:
+                fieldRef: { fieldPath: metadata.name }
+          envFrom:
+            - configMapRef: { name: benchmarker-config }
+            - secretRef:    { name: benchmarker-secrets }
+          resources:
+            requests: { cpu: "1",   memory: 1Gi }
+            # Add nvidia.com/gpu: 1 here for real runs.
+            limits:   { cpu: "8",   memory: 8Gi }
+          volumeMounts:
+            - name: uploads
+              mountPath: /var/lib/benchmarker/uploads
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: benchmarker-uploads

@@ -1,0 +1,37 @@
+# Docker Compose for the new Elixir stack. The repo-root docker-compose.yml
+# still drives the legacy Python services until they are retired.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: benchmarker_dev
+    ports: ["5433:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PHX_HOST: localhost
+      PHX_SERVER: "true"
+      PORT: "4000"
+      DATABASE_URL: ecto://postgres:postgres@postgres/benchmarker_dev
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-dev-secret-key-base-please-change-me-it-must-be-at-least-64-bytes-long-aaaaaaaaaaa}
+      UPLOAD_DIR: /var/lib/benchmarker/uploads
+    volumes: [uploads:/var/lib/benchmarker/uploads]
+    ports: ["4000:4000"]
+
+volumes:
+  pgdata:
+  uploads:

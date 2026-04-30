@@ -1,3 +1,5 @@
 ﻿*/__pycache__
 frontend/node_modules
 */routes/__pycache__
+*/__pycache__
+worker/runners/__pycache__

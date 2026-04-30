@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+cd -P -- "$(dirname -- "$0")"
+
+echo "[server] Running database migrations..."
+./benchmarker eval "Benchmarker.Release.migrate()"
+
+echo "[server] Starting application..."
+PHX_SERVER=true exec ./benchmarker start
