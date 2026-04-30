@@ -50,10 +50,13 @@ defmodule BenchmarkerWeb.JobController do
     dest     = Path.join(upload_dir, "#{job_id}#{ext}")
     :ok      = File.cp!(upload.path, dest)
 
+    args = Map.get(config, "args", [])
+
     case Benchmarks.create_job(%{
            game_name: game_name,
            file_path: dest,
-           config: config
+           config: config,
+           args: args
          }) do
       {:ok, job} ->
         # Enqueue worker job (replaces RQ enqueue from the Python service).
@@ -110,7 +113,9 @@ defmodule BenchmarkerWeb.JobController do
       status: to_string(j.status),
       worker_id: j.worker_id,
       config: j.config || %{},
+      args: j.args || [],
       results: j.results,
+      log: j.log,
       error: j.error,
       created_at: j.created_at,
       updated_at: j.updated_at

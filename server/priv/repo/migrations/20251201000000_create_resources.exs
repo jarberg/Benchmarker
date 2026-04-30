@@ -34,6 +34,8 @@ defmodule Benchmarker.Repo.Migrations.CreateResources do
       add :results,    :map
       add :error,      :text
       add :worker_id,  :string
+      add :args,       :map
+      add :log,        :text
       add :created_at, :utc_datetime, null: false
       add :updated_at, :utc_datetime, null: false
     end

@@ -9,9 +9,9 @@ defmodule Benchmarker.Workers.Runners.Generic do
   alias Benchmarker.Workers.{Archive, MetricsCollector}
 
   @impl true
-  def run(job_id, file_path, config) do
+  def run(job_id, file_path, config, args \\ []) do
     duration = Map.get(config, "duration_seconds", 60)
-    extra_args = Map.get(config, "args", [])
+    extra_args = if args != [], do: args, else: Map.get(config, "args", [])
     executable = Map.get(config, "executable", "")
     mock? = Map.get(config, "mock", false)
 
@@ -38,8 +38,9 @@ defmodule Benchmarker.Workers.Runners.Generic do
 
     summary = MetricsCollector.stop_and_summarize(collector)
     ended_at = DateTime.utc_now() |> DateTime.to_iso8601()
+    log = "[generic-runner] mock run completed for job #{job_id} (#{duration}s simulated)"
 
-    build_result(started_at, ended_at, summary, fps, config, "mock")
+    build_result(started_at, ended_at, summary, fps, config, "mock", log)
   end
 
   # ── real ────────────────────────────────────────────────────────────────
@@ -73,13 +74,13 @@ defmodule Benchmarker.Workers.Runners.Generic do
     os_pid = port_os_pid(port)
     {:ok, collector} = MetricsCollector.start_link(os_pid: os_pid)
 
-    wait_for_exit(port, duration + 30)
+    {_exit, log} = wait_for_exit(port, duration + 30)
     summary = MetricsCollector.stop_and_summarize(collector)
 
     ended_at = DateTime.utc_now() |> DateTime.to_iso8601()
     File.rm_rf(tmp)
 
-    build_result(started_at, ended_at, summary, [], config, "real")
+    build_result(started_at, ended_at, summary, [], config, "real", log)
   end
 
   # ── helpers ─────────────────────────────────────────────────────────────
@@ -91,25 +92,29 @@ defmodule Benchmarker.Workers.Runners.Generic do
     end
   end
 
-  defp wait_for_exit(port, timeout_s) do
+  defp wait_for_exit(port, timeout_s, acc \\ "") do
     receive do
-      {^port, {:exit_status, _code}} -> :ok
+      {^port, {:data, chunk}} ->
+        wait_for_exit(port, timeout_s, acc <> chunk)
+      {^port, {:exit_status, code}} ->
+        {code, acc}
     after
       timeout_s * 1_000 ->
         Port.close(port)
-        :timeout
+        {:timeout, acc}
     end
   end
 
   @doc false
-  def build_result(started_at, ended_at, summary, fps_values, config, mode) do
+  def build_result(started_at, ended_at, summary, fps_values, config, mode, log \\ "") do
     base = %{
       "mode" => mode,
       "started_at" => started_at,
       "ended_at" => ended_at,
       "config" => config,
       "system_info" => system_info(),
-      "metrics" => summary
+      "metrics" => summary,
+      "log" => log
     }
 
     if fps_values != [] do

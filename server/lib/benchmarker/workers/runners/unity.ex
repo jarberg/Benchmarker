@@ -16,11 +16,11 @@ defmodule Benchmarker.Workers.Runners.Unity do
   alias Benchmarker.Workers.Runners.Generic
 
   @impl true
-  def run(job_id, file_path, config) do
+  def run(job_id, file_path, config, args \\ []) do
     IO.puts("[unity-runner] no Unity-specific profiling yet — falling back to generic for #{job_id}")
 
     job_id
-    |> Generic.run(file_path, config)
+    |> Generic.run(file_path, config, args)
     |> Map.put("engine", "unity")
   end
 end

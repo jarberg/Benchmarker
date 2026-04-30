@@ -37,9 +37,9 @@ defmodule Benchmarker.Workers.Runners.Unreal do
   }
 
   @impl true
-  def run(job_id, file_path, config) do
+  def run(job_id, file_path, config, args \\ []) do
     duration = Map.get(config, "duration_seconds", 60)
-    extra_args = Map.get(config, "args", [])
+    extra_args = if args != [], do: args, else: Map.get(config, "args", [])
     executable = Map.get(config, "executable", "")
     mock? = Map.get(config, "mock", false)
 
@@ -74,8 +74,9 @@ defmodule Benchmarker.Workers.Runners.Unreal do
 
     summary = MetricsCollector.stop_and_summarize(collector)
     ended_at = DateTime.utc_now() |> DateTime.to_iso8601()
+    log = "[unreal-runner] mock UE run completed for job #{job_id} (#{duration}s simulated)"
 
-    build_result(started_at, ended_at, summary, frames, config, "mock")
+    build_result(started_at, ended_at, summary, frames, config, "mock", log)
   end
 
   # ── real ────────────────────────────────────────────────────────────────
@@ -117,7 +118,7 @@ defmodule Benchmarker.Workers.Runners.Unreal do
       end
 
     {:ok, collector} = MetricsCollector.start_link(os_pid: os_pid)
-    wait_for_exit(port, duration + 60)
+    {_exit, log} = wait_for_exit(port, duration + 60)
     summary = MetricsCollector.stop_and_summarize(collector)
 
     # Give UE a moment to flush CSV
@@ -127,16 +128,19 @@ defmodule Benchmarker.Workers.Runners.Unreal do
     ended_at = DateTime.utc_now() |> DateTime.to_iso8601()
     File.rm_rf(tmp)
 
-    build_result(started_at, ended_at, summary, frames, config, "real")
+    build_result(started_at, ended_at, summary, frames, config, "real", log)
   end
 
-  defp wait_for_exit(port, timeout_s) do
+  defp wait_for_exit(port, timeout_s, acc \\ "") do
     receive do
-      {^port, {:exit_status, _}} -> :ok
+      {^port, {:data, chunk}} ->
+        wait_for_exit(port, timeout_s, acc <> chunk)
+      {^port, {:exit_status, code}} ->
+        {code, acc}
     after
       timeout_s * 1_000 ->
         Port.close(port)
-        :timeout
+        {:timeout, acc}
     end
   end
 
@@ -192,7 +196,7 @@ defmodule Benchmarker.Workers.Runners.Unreal do
 
   # ── result builder ──────────────────────────────────────────────────────
 
-  defp build_result(started_at, ended_at, summary, frames, config, mode) do
+  defp build_result(started_at, ended_at, summary, frames, config, mode, log \\ "") do
     base = %{
       "engine" => "unreal",
       "mode" => mode,
@@ -200,7 +204,8 @@ defmodule Benchmarker.Workers.Runners.Unreal do
       "ended_at" => ended_at,
       "config" => config,
       "system_info" => Generic.system_info(),
-      "metrics" => summary
+      "metrics" => summary,
+      "log" => log
     }
 
     if frames == [] do

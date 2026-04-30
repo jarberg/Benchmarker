@@ -33,6 +33,8 @@ defmodule Benchmarker.Benchmarks.Job do
     end
 
     attribute :config, :map, default: %{}, public?: true
+    attribute :args, {:array, :string}, default: [], public?: true
+    attribute :log, :string, public?: true
     attribute :results, :map, public?: true
     attribute :error, :string, public?: true
     attribute :worker_id, :string, public?: true
@@ -46,11 +48,11 @@ defmodule Benchmarker.Benchmarks.Job do
 
     create :create do
       primary? true
-      accept [:game_name, :file_path, :config]
+      accept [:game_name, :file_path, :config, :args]
     end
 
     update :submit_results do
-      accept [:worker_id, :status, :results, :error]
+      accept [:worker_id, :status, :results, :error, :log]
       require_atomic? false
     end
 

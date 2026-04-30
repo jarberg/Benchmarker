@@ -31,13 +31,16 @@ defmodule Benchmarker.Workers.RunBenchmark do
     with {:ok, job} <- Benchmarks.get_job(job_id),
          {:ok, _} <- Benchmarks.update_job_status(job, %{status: :running, worker_id: worker_id}) do
       try do
-        results = Runners.run(job_id, job.file_path, job.config || %{})
+        results = Runners.run(job_id, job.file_path, job.config || %{}, job.args || [])
+        log = Map.get(results, "log", "")
+        clean_results = Map.delete(results, "log")
 
         {:ok, _} =
           Benchmarks.submit_results(job, %{
             worker_id: worker_id,
             status: :completed,
-            results: results,
+            results: clean_results,
+            log: log,
             error: nil
           })
 

@@ -382,6 +382,15 @@ function ResultsPanel({ job }) {
             </div>
           </div>
         )}
+
+        {job.log && (
+          <div className="mt-3">
+            <SectionLabel>Output Log</SectionLabel>
+            <pre className="max-h-64 overflow-auto rounded-md bg-muted px-3 py-2 text-xs text-muted-foreground whitespace-pre-wrap break-words">
+              {job.log}
+            </pre>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
