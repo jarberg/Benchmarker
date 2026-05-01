@@ -41,6 +41,7 @@ COPY --from=assets /app/priv/static/assets priv/static/assets
 
 COPY config/runtime.exs config/
 COPY rel rel
+RUN chmod +x rel/overlays/bin/server
 RUN mix compile
 RUN mix phx.digest
 RUN mix release

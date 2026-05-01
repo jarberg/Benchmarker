@@ -1,0 +1,5 @@
+# Ensure shell scripts always use LF line endings, even on Windows
+rel/overlays/bin/*  text eol=lf
+*.sh                text eol=lf
+*.exs               text eol=lf
+*.ex                text eol=lf
