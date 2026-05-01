@@ -38,4 +38,16 @@ if config_env() == :prod do
     server: true
 
   config :benchmarker, :upload_dir, System.get_env("UPLOAD_DIR", "/var/lib/benchmarker/uploads")
+
+  # Role-based Oban queue config.
+  # - web:    Oban runs with no queues so it can insert jobs but never steals them.
+  # - worker: Oban processes the benchmarks queue.
+  case System.get_env("BENCHMARKER_ROLE") do
+    "worker" ->
+      concurrency = String.to_integer(System.get_env("OBAN_CONCURRENCY") || "4")
+      config :benchmarker, Oban, queues: [benchmarks: concurrency]
+
+    _ ->
+      config :benchmarker, Oban, queues: []
+  end
 end

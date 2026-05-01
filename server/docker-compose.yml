@@ -29,8 +29,28 @@ services:
       DATABASE_URL: ecto://postgres:postgres@postgres/benchmarker_dev
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-dev-secret-key-base-please-change-me-it-must-be-at-least-64-bytes-long-aaaaaaaaaaa}
       UPLOAD_DIR: /var/lib/benchmarker/uploads
+      # No BENCHMARKER_ROLE set → defaults to :web (serves HTTP, empty Oban queues)
     volumes: [uploads:/var/lib/benchmarker/uploads]
     ports: ["4000:4000"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      server:
+        condition: service_started
+    environment:
+      BENCHMARKER_ROLE: worker
+      DATABASE_URL: ecto://postgres:postgres@postgres/benchmarker_dev
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-dev-secret-key-base-please-change-me-it-must-be-at-least-64-bytes-long-aaaaaaaaaaa}
+      UPLOAD_DIR: /var/lib/benchmarker/uploads
+      WORKER_ID: ${WORKER_ID:-worker-1}
+      OBAN_CONCURRENCY: ${OBAN_CONCURRENCY:-4}
+    volumes: [uploads:/var/lib/benchmarker/uploads]
+    # Scale with: docker compose up --scale worker=4
 
 volumes:
   pgdata:
