@@ -21,9 +21,10 @@ terraform {
   }
 
   # Wire up your remote state backend (S3 + DynamoDB lock) before running.
+  # Commented out for LocalStack local development — uncomment for real AWS.
   # backend "s3" {
   #   bucket         = "benchmarker-terraform-state"
-  #   key            = "global/terraform.tfstate"
+  #   key            = "staging/terraform.tfstate"
   #   region         = "us-east-1"
   #   dynamodb_table = "benchmarker-terraform-locks"
   #   encrypt        = true

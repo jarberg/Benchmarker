@@ -13,6 +13,11 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
 
+  # Disabled due to LocalStack free tier compatibility issue with Network ACL IDs
+  manage_default_network_acl    = false
+  manage_default_route_table    = false
+  manage_default_security_group = false
+
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
   }

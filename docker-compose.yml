@@ -1,0 +1,50 @@
+services:
+  registry:
+    image: registry:2
+    ports:
+      - "5000:5000"
+
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=benchmarker
+      - POSTGRES_PASSWORD=benchmarker
+      - POSTGRES_DB=benchmarker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack:3.8.1
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,secretsmanager,iam,sts
+      - DEFAULT_REGION=us-east-1
+    volumes:
+      - localstack_data:/var/lib/localstack
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+      
+  tools:
+    build:
+      context: .
+      dockerfile: tools/Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - kubeconfig:/root/.kube
+      - .:/workspace
+    working_dir: /workspace
+    depends_on:
+      localstack:
+        condition: service_healthy
+    entrypoint: ["tail", "-f", "/dev/null"]
+volumes:
+  postgres_data:
+  localstack_data:
+  kubeconfig:
