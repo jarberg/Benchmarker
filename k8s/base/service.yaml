@@ -14,9 +14,3 @@ spec:
       port: 80
       targetPort: 4000
       protocol: TCP
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: benchmarker
-  namespace: benchmarker
