@@ -1,0 +1,1 @@
+docker run --rm -v "%cd%:/app" -w /app hexpm/elixir:1.16.3-erlang-26.2.5-debian-bookworm-20240612-slim sh -c "mix local.hex --force && mix deps.get && mix format"

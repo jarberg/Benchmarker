@@ -30,7 +30,9 @@ defmodule Benchmarker.Workers.JobReaper do
       )
 
     Enum.each(stale_jobs, fn job ->
-      Logger.warning("[reaper] job #{job.id} stuck in :running since #{job.updated_at} — marking failed")
+      Logger.warning(
+        "[reaper] job #{job.id} stuck in :running since #{job.updated_at} — marking failed"
+      )
 
       Benchmarks.submit_results(job, %{
         worker_id: job.worker_id,
