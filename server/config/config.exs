@@ -38,9 +38,12 @@ config :inertia,
 # Oban (background jobs — replaces RQ for the worker queue once migrated)
 # Queues are intentionally not set here — runtime.exs assigns them based on
 # BENCHMARKER_ROLE so the web role never processes jobs.
+# Lifeline rescues jobs stuck in `executing` when a worker dies, triggering
+# the discard/1 callback which marks the benchmark job as :failed.
 config :benchmarker, Oban,
   engine: Oban.Engines.Basic,
-  repo: Benchmarker.Repo
+  repo: Benchmarker.Repo,
+  plugins: [{Oban.Plugins.Lifeline, rescue_after: :timer.minutes(5)}]
 
 # Logger
 config :logger, :console,
