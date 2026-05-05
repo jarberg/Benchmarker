@@ -1,0 +1,27 @@
+name: Docker
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  docker:
+    needs: [elixir, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with: 
+          registry: ghcr.io
+          username:${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          tags: latest
+      
+      - uses: docker/build-push-action@v6
+        with:
+          context: server
+          push: true
+          tags: |
+  ghcr.io/mjarberg88/benchmarker:${{ github.sha }}
+  ghcr.io/mjarberg88/benchmarker:latest
