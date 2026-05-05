@@ -1,3 +1,5 @@
+name: benchmarker
+
 # Standalone worker deployment.
 # Requires the root docker-compose.yml (postgres) and server to be running first.
 # Scale with: docker compose -f docker-compose.worker.yml up --scale worker=4

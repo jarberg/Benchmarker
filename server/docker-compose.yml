@@ -2,6 +2,7 @@
 # Postgres is provided by the root docker-compose.yml — start that first.
 services:
   server:
+    container_name: benchmarker-server
     build:
       context: .
       dockerfile: Dockerfile
