@@ -26,5 +26,5 @@ jobs:
           context: server
           push: true
           tags: |
-            ghcr.io/mjarberg88/benchmarker:${{ github.sha }}
-            ghcr.io/mjarberg88/benchmarker:latest
+            ghcr.io/jarberg/benchmarker:${{ github.sha }}
+            ghcr.io/jarberg/benchmarker:latest
