@@ -30,12 +30,12 @@ defmodule BenchmarkerWeb.Router do
   scope "/api", BenchmarkerWeb do
     pipe_through :upload
 
-    get  "/jobs",            JobController, :index
-    post "/jobs",            JobController, :create
-    get  "/jobs/:id",        JobController, :show
-    get  "/jobs/:id/file",   JobController, :download
+    get "/jobs", JobController, :index
+    post "/jobs", JobController, :create
+    get "/jobs/:id", JobController, :show
+    get "/jobs/:id/file", JobController, :download
     post "/jobs/:id/results", JobController, :submit_results
-    get  "/health",          HealthController, :show
+    get "/health", HealthController, :show
   end
 
   # Ash JSON:API: read-only listing/detail for jobs and configs, plus config CRUD.

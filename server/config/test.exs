@@ -10,7 +10,8 @@ config :benchmarker, Benchmarker.Repo,
 
 config :benchmarker, BenchmarkerWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "test-secret-key-base-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  secret_key_base:
+    "test-secret-key-base-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   server: false
 
 config :benchmarker, Benchmarker.Mailer, adapter: Swoosh.Adapters.Test

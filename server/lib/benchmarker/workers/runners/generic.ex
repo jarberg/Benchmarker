@@ -96,6 +96,7 @@ defmodule Benchmarker.Workers.Runners.Generic do
     receive do
       {^port, {:data, chunk}} ->
         wait_for_exit(port, timeout_s, acc <> chunk)
+
       {^port, {:exit_status, code}} ->
         {code, acc}
     after

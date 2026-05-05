@@ -6,7 +6,12 @@ defmodule Benchmarker.Workers.Runners do
 
   alias Benchmarker.Workers.Runners.{Generic, Unity, Unreal}
 
-  @callback run(job_id :: String.t(), file_path :: String.t() | nil, config :: map(), args :: list()) :: map()
+  @callback run(
+              job_id :: String.t(),
+              file_path :: String.t() | nil,
+              config :: map(),
+              args :: list()
+            ) :: map()
 
   @spec run(String.t(), String.t() | nil, map(), list()) :: map()
   def run(job_id, file_path, config, args \\ []) do

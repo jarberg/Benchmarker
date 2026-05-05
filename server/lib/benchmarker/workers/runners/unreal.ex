@@ -101,7 +101,9 @@ defmodule Benchmarker.Workers.Runners.Unreal do
     File.mkdir_p!(csv_dir)
 
     {res_w, res_h} = parse_resolution(Map.get(config, "resolution", "1920x1080"))
-    args = @profile_flags ++ Enum.map(extra_args, &to_string/1) ++ ["-resx=#{res_w}", "-resy=#{res_h}"]
+
+    args =
+      @profile_flags ++ Enum.map(extra_args, &to_string/1) ++ ["-resx=#{res_w}", "-resy=#{res_h}"]
 
     port =
       Port.open({:spawn_executable, exec_path}, [
@@ -135,6 +137,7 @@ defmodule Benchmarker.Workers.Runners.Unreal do
     receive do
       {^port, {:data, chunk}} ->
         wait_for_exit(port, timeout_s, acc <> chunk)
+
       {^port, {:exit_status, code}} ->
         {code, acc}
     after
@@ -181,8 +184,12 @@ defmodule Benchmarker.Workers.Runners.Unreal do
         keys
         |> Enum.zip(row)
         |> Enum.reduce(%{}, fn
-          {nil, _}, acc -> acc
-          {_, ""}, acc -> acc
+          {nil, _}, acc ->
+            acc
+
+          {_, ""}, acc ->
+            acc
+
           {k, v}, acc ->
             case Float.parse(String.trim(v)) do
               {f, _} -> Map.put(acc, k, f)

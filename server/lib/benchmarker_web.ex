@@ -45,15 +45,15 @@ defmodule BenchmarkerWeb do
     end
   end
 
-defp html_helpers do
-  quote do
-    import Phoenix.HTML
-    import Phoenix.LiveView.Helpers
-    alias Phoenix.LiveView.JS
+  defp html_helpers do
+    quote do
+      import Phoenix.HTML
+      import Phoenix.LiveView.Helpers
+      alias Phoenix.LiveView.JS
 
-    unquote(verified_routes())
+      unquote(verified_routes())
+    end
   end
-end
 
   def verified_routes do
     quote do

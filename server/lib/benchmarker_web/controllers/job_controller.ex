@@ -5,7 +5,7 @@ defmodule BenchmarkerWeb.JobController do
   @doc "List jobs, optionally filtered by status. Compatible with the Python CLI client."
   def index(conn, params) do
     status = params["status"]
-    limit  = String.to_integer(params["limit"] || "20")
+    limit = String.to_integer(params["limit"] || "20")
 
     jobs =
       Benchmarks.list_jobs!()
@@ -22,7 +22,7 @@ defmodule BenchmarkerWeb.JobController do
   def show(conn, %{"id" => id}) do
     case Benchmarks.get_job(id) do
       {:ok, job} -> json(conn, serialize(job))
-      _          -> conn |> put_status(404) |> json(%{error: "job not found"})
+      _ -> conn |> put_status(404) |> json(%{error: "job not found"})
     end
   end
 
@@ -33,22 +33,28 @@ defmodule BenchmarkerWeb.JobController do
   def create(conn, %{"game_name" => game_name, "file" => %Plug.Upload{} = upload} = params) do
     config =
       case params["config"] do
-        nil -> %{}
-        "" -> %{}
+        nil ->
+          %{}
+
+        "" ->
+          %{}
+
         s when is_binary(s) ->
           case Jason.decode(s) do
             {:ok, m} when is_map(m) -> m
             _ -> %{}
           end
-        m when is_map(m) -> m
+
+        m when is_map(m) ->
+          m
       end
 
-    job_id   = Ecto.UUID.generate()
+    job_id = Ecto.UUID.generate()
     upload_dir = Application.get_env(:benchmarker, :upload_dir, "uploads")
     File.mkdir_p!(upload_dir)
-    ext      = Path.extname(upload.filename || "")
-    dest     = Path.join(upload_dir, "#{job_id}#{ext}")
-    :ok      = File.cp!(upload.path, dest)
+    ext = Path.extname(upload.filename || "")
+    dest = Path.join(upload_dir, "#{job_id}#{ext}")
+    :ok = File.cp!(upload.path, dest)
 
     args = Map.get(config, "args", [])
 

@@ -85,7 +85,9 @@ defmodule Benchmarker.Workers.MetricsCollector do
   end
 
   defp sample(os_pid) when is_integer(os_pid) do
-    case System.cmd("ps", ["-p", Integer.to_string(os_pid), "-o", "%cpu=,rss="], stderr_to_stdout: true) do
+    case System.cmd("ps", ["-p", Integer.to_string(os_pid), "-o", "%cpu=,rss="],
+           stderr_to_stdout: true
+         ) do
       {output, 0} ->
         case String.split(String.trim(output), ~r/\s+/, trim: true) do
           [cpu, rss_kb] -> {to_float(cpu), to_float(rss_kb) / 1024.0}

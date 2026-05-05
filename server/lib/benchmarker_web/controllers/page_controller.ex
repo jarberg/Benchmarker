@@ -7,7 +7,7 @@ defmodule BenchmarkerWeb.PageController do
   list of jobs and saved config presets.
   """
   def index(conn, _params) do
-    jobs    = Benchmarks.list_jobs!()    |> Enum.map(&serialize_job/1)
+    jobs = Benchmarks.list_jobs!() |> Enum.map(&serialize_job/1)
     configs = Benchmarks.list_configs!() |> Enum.map(&serialize_config/1)
 
     conn

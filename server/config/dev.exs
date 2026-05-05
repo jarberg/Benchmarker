@@ -15,7 +15,8 @@ config :benchmarker, BenchmarkerWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "dev-secret-key-base-please-change-me-it-must-be-at-least-64-bytes-long-aaaaaaaaaaaaaaaaa",
+  secret_key_base:
+    "dev-secret-key-base-please-change-me-it-must-be-at-least-64-bytes-long-aaaaaaaaaaaaaaaaa",
   watchers: [
     npm: ["run", "dev", cd: Path.expand("../assets", __DIR__)]
   ],
