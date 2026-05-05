@@ -107,7 +107,7 @@ defmodule Benchmarker.Workers.Runners.Generic do
   end
 
   @doc false
-  def build_result(started_at, ended_at, summary, fps_values, config, mode, log \\ "") do
+  def build_result(started_at, ended_at, summary, fps_values, config, mode, log) do
     base = %{
       "mode" => mode,
       "started_at" => started_at,
