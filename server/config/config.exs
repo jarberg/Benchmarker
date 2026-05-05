@@ -36,9 +36,10 @@ config :inertia,
   raise_on_ssr_failure: config_env() != :prod
 
 # Oban (background jobs — replaces RQ for the worker queue once migrated)
+# Queues are intentionally not set here — runtime.exs assigns them based on
+# BENCHMARKER_ROLE so the web role never processes jobs.
 config :benchmarker, Oban,
   engine: Oban.Engines.Basic,
-  queues: [benchmarks: 4],
   repo: Benchmarker.Repo
 
 # Logger
