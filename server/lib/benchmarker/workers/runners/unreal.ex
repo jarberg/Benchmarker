@@ -203,7 +203,7 @@ defmodule Benchmarker.Workers.Runners.Unreal do
 
   # ── result builder ──────────────────────────────────────────────────────
 
-  defp build_result(started_at, ended_at, summary, frames, config, mode, log ) do
+  defp build_result(started_at, ended_at, summary, frames, config, mode, log) do
     base = %{
       "engine" => "unreal",
       "mode" => mode,
