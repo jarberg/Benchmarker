@@ -31,28 +31,17 @@ Submit games for automated benchmarking across scalable workers.
 ├── argocd/        ArgoCD AppProject + app-of-apps + per-env Applications
 │
 ├── terraform/     AWS infrastructure (VPC, EKS, RDS, ECR, ArgoCD helm)
-│
-├── api/           [legacy] Python FastAPI service — superseded by server/
-├── frontend/      [legacy] Vite + React app — superseded by server/assets/
-├── worker/        [legacy] Python RQ worker — superseded by Benchmarker.Workers.*
-└── client/        Python CLI client
 ```
 
 ## Local dev
 
-The new Elixir stack:
+Elixir stack:
 
 ```bash
 cd server
 docker compose up -d postgres   # start Postgres on :5433
 mix setup                       # deps + migrations + seeds
 mix phx.server                  # http://localhost:4000
-```
-
-The legacy Python stack (still works while you migrate):
-
-```bash
-docker compose up -d            # repo root — postgres + redis + api + worker
 ```
 
 ## Deploy
@@ -72,14 +61,12 @@ In `k8s/base/`, `deployment.yaml` runs the web role and `worker-deployment.yaml`
 
 ## Domain
 
-Two Ash resources port the original SQLAlchemy models 1:1:
-
 - **`Benchmarker.Benchmarks.Job`** — game_name, file_path, status, config, results, error, worker_id, timestamps
 - **`Benchmarker.Benchmarks.Config`** — saved benchmark presets (name + JSON config)
 
 Endpoints:
 
 - `GET /` — Inertia-rendered React dashboard
-- `POST /api/jobs` — multipart upload (legacy-compatible with the old FastAPI route)
+- `POST /api/jobs` — multipart upload
 - `POST /api/jobs/:id/results` — worker callback
-- `GET /jsonapi/{jobs,configs}` — JSON:API courtesy of AshJsonApi
+- `GET /jsonapi/{jobs,configs}` — JSON:API  AshJsonApi
