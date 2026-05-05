@@ -23,29 +23,6 @@ defmodule Benchmarker.Workers.RunBenchmark do
   # Allow long-running benchmarks (default 1h, can override via config).
   def timeout(_job), do: Application.get_env(:benchmarker, :benchmark_timeout_ms, 3_600_000)
 
-  # Called by Oban when the job is discarded (e.g. after Lifeline rescues an
-  # orphaned job whose worker died mid-run). Marks the benchmark job as failed
-  # so it doesn't stay stuck in :running forever.
-  @impl Oban.Worker
-  def discard(%Oban.Job{args: %{"job_id" => job_id}}) do
-    Logger.warning("[discard] job #{job_id} discarded — marking as failed")
-
-    case Benchmarks.get_job(job_id) do
-      {:ok, job} ->
-        Benchmarks.submit_results(job, %{
-          worker_id: worker_id(),
-          status: :failed,
-          results: nil,
-          error: "Worker terminated before job could complete"
-        })
-
-      {:error, reason} ->
-        Logger.error("[discard] could not load job #{job_id}: #{inspect(reason)}")
-    end
-
-    :ok
-  end
-
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"job_id" => job_id}}) do
     worker_id = worker_id()

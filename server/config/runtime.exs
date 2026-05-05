@@ -39,15 +39,24 @@ if config_env() == :prod do
 
   config :benchmarker, :upload_dir, System.get_env("UPLOAD_DIR", "/var/lib/benchmarker/uploads")
 
-  # Role-based Oban queue config.
-  # - web:    Oban runs with no queues so it can insert jobs but never steals them.
-  # - worker: Oban processes the benchmarks queue.
+  # Role-based Oban queue and cron config.
+  # - web:    no queues (inserts jobs only); reaper cron runs here so it works
+  #           even when no workers are active.
+  # - worker: processes the benchmarks queue; no cron (avoid duplicate reaping).
   case System.get_env("BENCHMARKER_ROLE") do
     "worker" ->
       concurrency = String.to_integer(System.get_env("OBAN_CONCURRENCY") || "4")
       config :benchmarker, Oban, queues: [benchmarks: concurrency]
 
     _ ->
-      config :benchmarker, Oban, queues: []
+      config :benchmarker, Oban,
+        queues: [],
+        plugins: [
+          {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(5)},
+          {Oban.Plugins.Cron,
+           crontab: [
+             {"*/5 * * * *", Benchmarker.Workers.JobReaper}
+           ]}
+        ]
   end
 end
