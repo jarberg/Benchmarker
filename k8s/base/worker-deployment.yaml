@@ -27,12 +27,12 @@ spec:
       #     operator: Exists
       containers:
         - name: worker
-          image: ghcr.io/example/benchmarker-server:latest   # same image, different role
+          image: ghcr.io/jarberg/benchmarker-worker:latest   # same image, different role
           imagePullPolicy: IfNotPresent
           env:
             - name: BENCHMARKER_ROLE
               value: worker
-            - name: PHX_SERVER
+            - name: PHX_WORKER
               value: "false"
             - name: WORKER_ID
               valueFrom:

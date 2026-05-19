@@ -24,7 +24,7 @@ spec:
       serviceAccountName: benchmarker
       containers:
         - name: server
-          image: ghcr.io/example/benchmarker-server:latest
+          image: ghcr.io/jarberg/benchmarker-server:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000
