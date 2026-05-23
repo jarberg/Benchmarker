@@ -52,6 +52,8 @@ defmodule Benchmarker.MixProject do
       {:ash_postgres, "~> 2.4"},
       {:ash_phoenix, "~> 2.1"},
       {:ash_json_api, "~> 1.4"},
+      {:ash_graphql, "~> 1.3"},
+      {:absinthe_plug, "~> 1.5"},
       {:ash_oban, "~> 0.2"},
       {:oban, "~> 2.18"},
 

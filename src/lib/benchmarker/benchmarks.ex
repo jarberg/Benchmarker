@@ -4,7 +4,7 @@ defmodule Benchmarker.Benchmarks do
   that replace the FastAPI / SQLAlchemy models from the original Python service.
   """
 
-  use Ash.Domain, extensions: [AshJsonApi.Domain]
+  use Ash.Domain, extensions: [AshJsonApi.Domain, AshGraphql.Domain]
 
   resources do
     resource Benchmarker.Benchmarks.Job do

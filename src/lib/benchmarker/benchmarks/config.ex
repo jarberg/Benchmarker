@@ -7,7 +7,7 @@ defmodule Benchmarker.Benchmarks.Config do
   use Ash.Resource,
     domain: Benchmarker.Benchmarks,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshJsonApi.Resource]
+    extensions: [AshJsonApi.Resource, AshGraphql.Resource]
 
   postgres do
     table "configs"
@@ -16,6 +16,20 @@ defmodule Benchmarker.Benchmarks.Config do
 
   json_api do
     type "config"
+  end
+
+  graphql do
+    type :config
+
+    queries do
+      get :get_config, :read
+      list :list_configs, :read
+    end
+
+    mutations do
+      create :create_config, :create
+      destroy :delete_config, :destroy
+    end
   end
 
   attributes do

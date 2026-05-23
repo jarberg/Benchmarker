@@ -44,14 +44,24 @@ defmodule BenchmarkerWeb.Router do
     forward "/", BenchmarkerWeb.AshJsonApiRouter
   end
 
-  # Dev-only Phoenix LiveDashboard.
-  if Application.compile_env(:benchmarker, :dev_routes) do
-    import Phoenix.LiveDashboard.Router
+  # Phoenix LiveDashboard — available in all environments.
+  # Add authentication here before going to production.
+  import Phoenix.LiveDashboard.Router
 
-    scope "/dev" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: BenchmarkerWeb.Telemetry
-    end
+  scope "/dev" do
+    pipe_through :browser
+    live_dashboard "/dashboard", metrics: BenchmarkerWeb.Telemetry
+  end
+
+  # GraphQL API + GraphiQL playground.
+  scope "/gql" do
+    pipe_through :api
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: BenchmarkerWeb.Schema,
+      interface: :advanced
+
+    forward "/", Absinthe.Plug, schema: BenchmarkerWeb.Schema
   end
 end
 

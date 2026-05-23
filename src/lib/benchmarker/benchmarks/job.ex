@@ -7,7 +7,7 @@ defmodule Benchmarker.Benchmarks.Job do
   use Ash.Resource,
     domain: Benchmarker.Benchmarks,
     data_layer: AshPostgres.DataLayer,
-    extensions: [AshJsonApi.Resource]
+    extensions: [AshJsonApi.Resource, AshGraphql.Resource]
 
   postgres do
     table "jobs"
@@ -16,6 +16,21 @@ defmodule Benchmarker.Benchmarks.Job do
 
   json_api do
     type "job"
+  end
+
+  graphql do
+    type :job
+
+    queries do
+      get :get_job, :read
+      list :list_jobs, :read
+    end
+
+    mutations do
+      create :create_job, :create
+      update :submit_job_results, :submit_results
+      update :update_job_status, :update_status
+    end
   end
 
   attributes do
