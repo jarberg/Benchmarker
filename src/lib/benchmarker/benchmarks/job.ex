@@ -23,7 +23,7 @@ defmodule Benchmarker.Benchmarks.Job do
 
     queries do
       get :get_job, :read
-      list :list_jobs, :read
+      list(:list_jobs, :read)
     end
 
     mutations do

@@ -23,7 +23,7 @@ defmodule Benchmarker.Benchmarks.Config do
 
     queries do
       get :get_config, :read
-      list :list_configs, :read
+      list(:list_configs, :read)
     end
 
     mutations do
