@@ -31,7 +31,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: server
+        working-directory: src
 
     steps:
       - uses: actions/checkout@v4
@@ -46,9 +46,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            server/deps
-            server/_build
-          key: mix-${{ runner.os }}-${{ hashFiles('server/mix.lock') }}
+            src/deps
+            src/_build
+          key: mix-${{ runner.os }}-${{ hashFiles('src/mix.lock') }}
           restore-keys: mix-${{ runner.os }}-
 
       - name: Install dependencies
@@ -70,7 +70,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: server/assets
+        working-directory: src/assets
 
     steps:
       - uses: actions/checkout@v4
@@ -80,7 +80,7 @@ jobs:
         with:
           node-version: "24"
           cache: npm
-          cache-dependency-path: server/assets/package-lock.json
+          cache-dependency-path: src/assets/package-lock.json
 
       - name: Install dependencies
         run: npm ci

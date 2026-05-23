@@ -23,8 +23,8 @@ jobs:
 
       - uses: docker/build-push-action@v6
         with:
-          context: server
-          dockerfile: server/Dockerfile
+          context: src
+          dockerfile: src/Dockerfile
           push: true
           tags: |
             ghcr.io/jarberg/benchmarker:${{ github.sha }}
@@ -46,8 +46,8 @@ jobs:
 
       - uses: docker/build-push-action@v6
         with:
-          context: server
-          dockerfile: server/Dockerfile.worker
+          context: src
+          dockerfile: src/Dockerfile.worker
           push: true
           tags: |
             ghcr.io/jarberg/benchmarker-worker:${{ github.sha }}
